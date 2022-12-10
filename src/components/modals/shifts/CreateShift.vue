@@ -97,7 +97,7 @@ import { defineComponent, reactive, ref, toRaw, watch } from "vue";
 import { useStore } from "vuex";
 import { FormInstance } from "ant-design-vue";
 
-import DriverService from "../../../api/drivers";
+import ShiftsService from "../../../api/shifts";
 import { dateToMoscow } from "../../../service/helper.service";
 import { notification } from "../../../service/notification";
 
@@ -169,7 +169,7 @@ export default defineComponent({
           const isValidForm = await formRef.value.validate();
 
           if (isValidForm) {
-            const driver = await DriverService.createShift(
+            const driver = await ShiftsService.createShift(
               toRaw({ ...formData, startTime: nowTime })
             );
 
@@ -178,10 +178,6 @@ export default defineComponent({
             }
           }
         }
-      } catch (error) {
-        console.log("При добавлении смены произошла ошибка", error);
-
-        notification("error", "При добавлении смены произошла ошибка");
       } finally {
         store.dispatch("base/setUpdateData");
         store.dispatch("modal/setClose");
