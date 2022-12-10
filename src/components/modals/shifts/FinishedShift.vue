@@ -2,11 +2,11 @@
   <div class="modal">
     <div class="modal__content">Уверены, что хотите закончить смену?</div>
     <div class="modal__footer">
-      <a-button type="primary" size="middle" @click="onFinishedShift"
+      <a-button type="primary" size="middle" @click="finishedShift"
         >Да</a-button
       >
 
-      <a-button type="secondary" size="middle" @click="handleClose"
+      <a-button type="secondary" size="middle" @click="cancel"
         >Нет</a-button
       >
     </div>
@@ -17,7 +17,7 @@
 import { defineComponent, reactive, ref, toRaw, watch } from "vue";
 import { useStore } from "vuex";
 
-import DriverService from "../../../api/drivers";
+import ShiftsService from "../../../api/shifts";
 
 import { notification } from "../../../service/notification";
 
@@ -26,9 +26,9 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const onFinishedShift = async () => {
+    const finishedShift = async () => {
       try {
-        await DriverService.finishedShift();
+        await ShiftsService.finishedShift();
       } catch (error) {
         console.log("При завершении смены произошла ошибка", error);
 
@@ -39,11 +39,11 @@ export default defineComponent({
       }
     };
 
-    const handleClose = () => {
+    const cancel = () => {
       store.dispatch("modal/setClose");
     };
 
-    return { onFinishedShift, handleClose };
+    return { finishedShift, cancel };
   },
 });
 </script>
