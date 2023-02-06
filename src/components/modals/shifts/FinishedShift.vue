@@ -27,9 +27,15 @@ export default defineComponent({
   setup({ data }) {
     const store = useStore();
 
+    const handleClose = () => {
+      store.dispatch('modal/setClose');
+    };
+
     const onFinishedShift = async () => {
       if (!data?.id) {
-        return;
+        handleClose();
+
+        return 
       }
 
       try {
@@ -40,9 +46,6 @@ export default defineComponent({
       }
     };
 
-    const handleClose = () => {
-      store.dispatch('modal/setClose');
-    };
 
     return {
       onFinishedShift,

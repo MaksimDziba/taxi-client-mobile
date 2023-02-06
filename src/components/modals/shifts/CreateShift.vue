@@ -75,7 +75,6 @@ import { useStore } from "vuex";
 import { FormInstance } from "ant-design-vue";
 
 import ShiftService from "../../../api/shifts";
-import { notification } from "../../../service/notification";
 
 import { IVehicle } from "../../../interface/Vehicle";
 
