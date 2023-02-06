@@ -10,7 +10,6 @@ export default defineComponent({
   setup() {
     const collapsed = ref<boolean>(false);
     const loading = ref<boolean>(true);
-    const modalType = ref<string>("");
 
     return {
       collapsed,

@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="page_registration">
+  <a-layout class="page-registration">
     <div class="steps-content">
       <component
         :is="steps[current].content"
@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import CreateDriver from "../components/registration/CreateDriver.vue";
 import CreateVehicle from "../components/registration/CreateVehicle.vue";
 

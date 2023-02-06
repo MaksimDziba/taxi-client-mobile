@@ -3,7 +3,7 @@ import { createApp } from "vue";
 import router from "./router";
 import store from "./service/store";
 
-import YmapPlugin from 'vue-yandex-maps'
+import YmapPlugin from 'vue-yandex-maps';
 
 import App from "./App.vue";
 

@@ -235,17 +235,17 @@ $background-main: #F6F7FB;
 }
 
 // page auth
-.page_auth,
-.page_registration {
+.page-auth,
+.page-registration {
   height: 100vh;
   background-color: #f0f2f5;
 }
 
-.page_map {
-  height: 100vh;
+.page-map__content {
+  height: 100%;
 }
 
-.page_registration {
+.page-registration {
   padding-top: 20px;
 }
 

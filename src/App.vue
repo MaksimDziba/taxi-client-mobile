@@ -35,7 +35,7 @@ export default defineComponent({
 
     return {
       layout: computed(() =>
-        !!route?.meta?.auth || false ? MainLayout : AuthLayout
+        !!route?.meta?.auth ? MainLayout : AuthLayout
       ),
       isDataLoaded,
     };

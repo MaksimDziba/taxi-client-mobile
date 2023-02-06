@@ -31,29 +31,6 @@
           />
         </a-form-item>
 
-        <a-form-item
-          label="Время начала"
-          name="startTime"
-          :rules="[{ required: true, message: 'Обязательное поле!' }]"
-        >
-          <a-input
-            placeholder="Заполнить поле"
-            v-model:value="formData.startTime"
-          />
-        </a-form-item>
-
-        <a-form-item
-          label="Приоритет выдачи заказов"
-          name="priority"
-          :rules="[{ required: true, message: 'Обязательное поле!' }]"
-        >
-          <a-select
-            placeholder="Заполнить поле"
-            v-model:value="formData.priority"
-            :options="priorityOptions"
-          />
-        </a-form-item>
-
         <a-form-item label="Марка автомобиля" name="carModel">
           <a-input
             placeholder="Укажите ТС"
@@ -70,11 +47,11 @@
           />
         </a-form-item>
 
-        <a-form-item label="Гос номер ТС" name="gosNumber">
+        <a-form-item label="Гос номер ТС" name="carNumber">
           <a-input
             placeholder="Укажите ТС"
             disabled
-            v-model:value="formData.gosNumber"
+            v-model:value="formData.carNumber"
           />
         </a-form-item>
 
@@ -97,8 +74,7 @@ import { defineComponent, reactive, ref, toRaw, watch } from "vue";
 import { useStore } from "vuex";
 import { FormInstance } from "ant-design-vue";
 
-import DriverService from "../../../api/drivers";
-import { dateToMoscow } from "../../../service/helper.service";
+import ShiftService from "../../../api/shifts";
 import { notification } from "../../../service/notification";
 
 import { IVehicle } from "../../../interface/Vehicle";
@@ -108,12 +84,6 @@ const statusOptions = [
   { label: "Завершена", value: "finished" },
 ];
 
-const priorityOptions = [
-  { label: "1", value: "1" },
-  { label: "2", value: "2" },
-  { label: "3", value: "3" },
-  { label: "4", value: "4" },
-];
 
 export default defineComponent({
   name: "CreateShift",
@@ -124,9 +94,6 @@ export default defineComponent({
     const formRef = ref<FormInstance>();
     const validForm = ref<boolean>(true);
     const vehicleID = ref<number | null>(null);
-
-    const nowTime = new Date();
-    const time = dateToMoscow(nowTime);
 
     const vehiclesOptions = driver.vehicles.map((item: IVehicle) => ({
       label: `${item.carModel} - ${item.gosNumber}`,
@@ -139,28 +106,22 @@ export default defineComponent({
           (vehicle: IVehicle) => vehicle.id === id
         );
 
-        formData.gosNumber = vehicle.gosNumber;
+        formData.carNumber = vehicle.gosNumber;
         formData.carModel = vehicle.carModel;
         formData.carColor = vehicle.carColor;
-        formData.vehicleID = vehicle.id;
       } else {
-        formData.gosNumber = "";
+        formData.carNumber = "";
         formData.carModel = "";
         formData.carColor = "";
-        formData.vehicleID = null;
       }
     });
 
     const formData = reactive({
       status: "working",
-      startTime: time,
-      priority: "",
-      gosNumber: "",
+      carNumber: "",
       carModel: "",
       carColor: "",
       driverID: driver.id,
-      vehicleID: null,
-      ordersID: [],
     });
 
     const onSubmit = async () => {
@@ -169,19 +130,13 @@ export default defineComponent({
           const isValidForm = await formRef.value.validate();
 
           if (isValidForm) {
-            const driver = await DriverService.createShift(
-              toRaw({ ...formData, startTime: nowTime })
-            );
+            const shift = await ShiftService.createShift(formData);
 
-            if (driver) {
+            if (shift) {
               formRef.value.resetFields();
             }
           }
         }
-      } catch (error) {
-        console.log("При добавлении смены произошла ошибка", error);
-
-        notification("error", "При добавлении смены произошла ошибка");
       } finally {
         store.dispatch("base/setUpdateData");
         store.dispatch("modal/setClose");
@@ -202,7 +157,6 @@ export default defineComponent({
       formRef,
       formData,
       statusOptions,
-      priorityOptions,
       vehiclesOptions,
       vehicleID,
       handleValidate,

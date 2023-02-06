@@ -2,10 +2,10 @@ import apiClient from "./http/axios-client";
 
 import { notification } from "../service/notification";
 
-import { IShift } from "../interface/Shift";
+import { IShift, IShiftCreate } from "../interface/Shift";
 
 class ShiftService {
-  async createShift(data: IShift): Promise<IShift | {}> {
+  async createShift(data: IShiftCreate): Promise<IShift | {}> {
     try {
       const response = await apiClient.post("/shifts", data);
 
@@ -35,15 +35,15 @@ class ShiftService {
     }
   }
 
-  async finishedShift(): Promise<IShift | {}> {
+  async finishedShift(id: number): Promise<IShift | {}> {
     try {
-      const response = await apiClient.put(`/shifts/finished`);
+      const response = await apiClient.put(`/shifts/${id}/finished`);
 
       return response.data || {};
     } catch (error) {
-      notification("error", `При обновлении смены произошла ошибка: ${error}`);
+      notification("error", `При завершении смены произошла ошибка: ${error}`);
 
-      throw new Error(`При обновлении смены произошла ошибка. ${error}`);
+      throw new Error(`При завершении смены произошла ошибка: ${error}`);
     }
   }
 }

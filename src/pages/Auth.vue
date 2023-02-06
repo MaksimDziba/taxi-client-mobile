@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="page_auth">
+  <a-layout class="page-auth">
     <img alt="Taxi service logo" src="../assets/taxi-logo.png" />
 
     <div class="box__xs box__center">

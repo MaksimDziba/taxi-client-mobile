@@ -2,6 +2,7 @@ export interface IOrder {
   addressFrom: string,
   addressTo: string,
   babyChair: boolean,
+  location: string,
   client: {
     id: number, 
     name: string,

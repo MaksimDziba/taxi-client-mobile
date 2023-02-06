@@ -3,40 +3,46 @@
     <div class="p-inner">
       <div class="p-shifts__top">
         <a-button
-          v-if="hasActiveShift"
+          v-if="working"
           type="primary"
           shape="round"
           danger
-          @click="finishedShift"
-          >Закончить смену</a-button
+          @click="handleFinishedShift"
         >
-        <a-button v-else type="primary" shape="round" @click="openModal"
-          >Взять смену</a-button
-        >
+          Закончить смену
+        </a-button>
+
+        <a-button v-else type="primary" shape="round" @click="openModal">
+          Взять смену
+        </a-button>
       </div>
 
       <div class="p-shifts__main">
-        <a-typography-title v-if="hasActiveShift" :level="5"
-          >Активная смена:</a-typography-title
-        >
+        <a-typography-title v-if="working" :level="5">
+          Активная смена:
+        </a-typography-title>
 
         <a-card v-if="working" class="card-primary">
           <a-card-meta>
             <template #description>
               <div>Модель машины: {{ working.carModel }},</div>
-              <div>Гос номер: {{ working.gosNumber }},</div>
+
+              <div>Гос номер: {{ working.carNumber }},</div>
             </template>
           </a-card-meta>
         </a-card>
 
         <br />
-        <a-typography-title :level="5">Завершённые смены:</a-typography-title>
+
+        <a-typography-title v-if="finished.length" :level="5"
+          >Завершённые смены:</a-typography-title
+        >
 
         <a-card v-for="item in finished" :key="item.id" class="card-primary">
           <a-card-meta :title="item.title">
             <template #description>
               <div>Модель машины: {{ item.carModel }},</div>
-              <div>Гос номер: {{ item.gosNumber }}</div>
+              <div>Гос номер: {{ item.carNumber }}</div>
             </template>
           </a-card-meta>
         </a-card>
@@ -46,74 +52,75 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
+import { useStore } from 'vuex';
 
-import { useStore } from "vuex";
-import ShiftService from "../api/shifts";
-import { IShift } from "../interface/Shift";
-import { dateToMoscow } from "../service/helper.service";
+import ShiftService from '../api/shifts';
+
+import { dateToMoscow } from '../service/helper.service';
+
+import { IShift } from '../interface/Shift';
 
 interface Shift {
   id: number;
   title: string;
   carModel: string;
-  gosNumber: string;
+  carNumber: string;
 }
 
 export default defineComponent({
-  name: "Shifts",
+  name: 'Shifts',
   setup() {
     const store = useStore();
 
     const working = ref<IShift | null>(null);
     const finished = ref<Shift[] | []>([]);
 
-    const hasActiveShift = ref(false);
-    const isUpdateData = computed(() => store.state["base"].updateData);
+    const isUpdateData = computed(() => store.state['base'].updateData);
+
+    const fetchData = async () => {
+      const response = await ShiftService.getShifts();
+
+      finished.value = response.finished.map((item: IShift) => ({
+        id: item.id,
+        title: `${dateToMoscow(new Date(item.endTime))}`,
+        carModel: item.carModel,
+        carNumber: item.carNumber,
+      }));
+
+      working.value = response.working;
+    };
+
+    onMounted(() => {
+      fetchData();
+    });
 
     watch(isUpdateData, () => {
       fetchData();
     });
 
-    onMounted(async () => fetchData());
-
-    const fetchData = async () => {
-      const response = await ShiftService.getShifts();
-
-      if (response.finished.length) {
-        finished.value = response.finished.map((item: IShift) => ({
-          id: item.id,
-          title: `${dateToMoscow(new Date(item.endTime))}`,
-          carModel: item.carModel,
-          gosNumber: item.gosNumber,
-        }));
-      }
-
-      
-      if (response.working?.id) {
-        working.value = response.working;
-
-        hasActiveShift.value = true;
+    const handleFinishedShift = () => {
+      if (working.value?.id) {
+        store.commit('modal/SET_MODAL', {
+          type: 'finished-shift',
+          show: true,
+          data: {
+            id: working.value.id,
+          },
+        });
       }
     };
 
-    const finishedShift = () =>
-      store.commit("modal/SET_MODAL", {
-        type: "finished-shift",
-        show: true,
-      });
-
     const openModal = () =>
-      store.commit("modal/SET_MODAL", {
-        type: "create-shift",
+      store.commit('modal/SET_MODAL', {
+        type: 'create-shift',
         show: true,
       });
 
     return {
-      hasActiveShift,
       working,
       finished,
-      finishedShift,
+      handleFinishedShift,
       openModal,
     };
   },

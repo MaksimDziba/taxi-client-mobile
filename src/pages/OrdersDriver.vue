@@ -20,9 +20,10 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
-
 import { useStore } from "vuex";
+
 import OrderService from "../api/orders";
+
 import { dateToMoscow } from "../service/helper.service";
 
 interface Order { 
@@ -46,7 +47,7 @@ export default defineComponent({
       fetchData();
     });
 
-    onMounted(async () => fetchData());
+    onMounted(() => fetchData());
 
     const fetchData = async () => {
       const response  = await OrderService.getAll();

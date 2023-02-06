@@ -1,6 +1,6 @@
 <template>
     <yandex-map 
-      class="page_map"
+      class="page-map"
       zoom="12"
       :settings="settings" 
       :coords="coords" 

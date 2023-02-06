@@ -2,48 +2,52 @@
   <div class="modal">
     <div class="modal__content">Уверены, что хотите закончить смену?</div>
     <div class="modal__footer">
-      <a-button type="primary" size="middle" @click="onFinishedShift"
-        >Да</a-button
-      >
+      <a-button type="primary" size="middle" @click="onFinishedShift">
+        Да
+      </a-button>
 
-      <a-button type="secondary" size="middle" @click="handleClose"
-        >Нет</a-button
-      >
+      <a-button type="secondary" size="middle" @click="handleClose">
+        Нет
+      </a-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, toRaw, watch } from "vue";
-import { useStore } from "vuex";
+import { defineComponent } from 'vue';
+import { useStore } from 'vuex';
 
-import DriverService from "../../../api/drivers";
-
-import { notification } from "../../../service/notification";
+import ShiftService from '../../../api/shifts';
 
 export default defineComponent({
-  name: "FinishedShift",
-  setup() {
+  name: 'FinishedShift',
+  props: {
+    data: Object,
+  },
+  setup({ data }) {
     const store = useStore();
 
     const onFinishedShift = async () => {
-      try {
-        await DriverService.finishedShift();
-      } catch (error) {
-        console.log("При завершении смены произошла ошибка", error);
+      if (!data?.id) {
+        return;
+      }
 
-        notification("error", "При завершении смены произошла ошибка");
+      try {
+        await ShiftService.finishedShift(data.id);
       } finally {
-        store.dispatch("base/setUpdateData");
-        store.dispatch("modal/setClose");
+        store.dispatch('base/setUpdateData');
+        store.dispatch('modal/setClose');
       }
     };
 
     const handleClose = () => {
-      store.dispatch("modal/setClose");
+      store.dispatch('modal/setClose');
     };
 
-    return { onFinishedShift, handleClose };
+    return {
+      onFinishedShift,
+      handleClose,
+    };
   },
 });
 </script>
