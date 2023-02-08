@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent } from "vue";
 import { useStore } from "vuex";
 
 import { LoadingOutlined } from "@ant-design/icons-vue";

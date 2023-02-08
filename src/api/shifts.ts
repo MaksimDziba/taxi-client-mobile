@@ -46,6 +46,19 @@ class ShiftService {
       throw new Error(`При завершении смены произошла ошибка: ${error}`);
     }
   }
+
+  async assignOrderToShift(orderID: number, shiftID: number) {
+    try {
+      await apiClient.post('/shifts/assign-order-to-shift', {
+          orderID,
+          shiftID,
+      })
+    } catch (error) {
+      notification("error", `При взятии заказа произошла ошибка: ${error}`);
+
+      throw new Error(`При взятии заказа произошла ошибка: ${error}`);
+    }
+  }
 }
 
 export default new ShiftService();

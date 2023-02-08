@@ -2,25 +2,25 @@
   <div class="modal">
     <div class="modal__content">
       <a-descriptions title="">
-        <a-descriptions-item label="Откуда">{{
-          data.addressFrom
-        }}</a-descriptions-item>
+        <a-descriptions-item label="Стоимость">
+          {{ data.preOrderCost }}
+        </a-descriptions-item>
 
-        <a-descriptions-item label="Куда">{{
-          data.addressTo
-        }}</a-descriptions-item>
+        <a-descriptions-item label="Тариф">
+          {{ data.tariff.type }}
+        </a-descriptions-item>
 
-        <a-descriptions-item label="Стоимость">{{
-          data.preOrderCost
-        }}</a-descriptions-item>
+        <a-descriptions-item label="Кол-во пассажиров">
+          {{ data.maxCountPassenger }}
+        </a-descriptions-item>
 
-        <a-descriptions-item label="Тариф">{{
-          data.tariff.type
-        }}</a-descriptions-item>
+        <a-descriptions-item label="Откуда">
+          {{ data.addressFrom }}
+        </a-descriptions-item>
 
-        <a-descriptions-item label="Кол-во пассажиров">{{
-          data.maxCountPassenger
-        }}</a-descriptions-item>
+        <a-descriptions-item label="Куда">
+          {{ data.addressTo }}
+        </a-descriptions-item>
 
         <a-descriptions-item v-if="data.babyChair" label="Детское кресло">
           <a-checkbox :value="data.babyChair" :disabled="true" />
@@ -30,7 +30,7 @@
           <a-checkbox :value="data.transportationAnimals" :disabled="true" />
         </a-descriptions-item>
 
-        <a-descriptions-item label="Длительность">
+        <a-descriptions-item label="Маршрут">
           {{ routeOrder.durationInTraffic }}(без пробок {{ routeOrder.duration }}), {{ routeOrder.distance }}
         </a-descriptions-item>
       </a-descriptions>
@@ -47,9 +47,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from 'vue';
-
+import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { loadYmap } from 'vue-yandex-maps';
+
+import { useStore } from 'vuex';
+
+import ShiftService from "../../../api/shifts";
+
 import { yaSettings } from '../../../settings';
 
 export default defineComponent({
@@ -58,13 +62,16 @@ export default defineComponent({
     data: Object,
   },
   setup({ data = {} }) {
+    const store = useStore();
+    const shiftID = ref<number>(store.state["base"].driver.shifts[0].id);
+
     const routeOrder = reactive({
       distance: '',
       duration: '',
       durationInTraffic: '',
     });
 
-    const { addressFrom, addressTo, location } = data;
+    const { id: orderID, addressFrom, addressTo, location } = data;
 
     const { from } = JSON.parse(location);
 
@@ -135,9 +142,16 @@ export default defineComponent({
       });
     }
 
+    const handleClose = () => {
+      store.dispatch('modal/setClose');
+    };
 
-    const handleTakeOrder = () => {
-
+    const handleTakeOrder = async () => {
+      try {
+        await ShiftService.assignOrderToShift(orderID, shiftID.value);
+      } finally {
+        handleClose();
+      }
     }
 
     return {

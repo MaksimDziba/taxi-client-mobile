@@ -42,7 +42,8 @@ export default defineComponent({
         await ShiftService.finishedShift(data.id);
       } finally {
         store.dispatch('base/setUpdateData');
-        store.dispatch('modal/setClose');
+
+        handleClose();
       }
     };
 
