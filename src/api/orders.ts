@@ -5,7 +5,7 @@ import { notification } from '../service/notification';
 import { IOrder } from '../interface/Order';
 
 class OrderService {
-  async getAll(): Promise<IOrder[] | []> {
+  async getAll(): Promise<IOrder[]> {
     try {
       const response = await apiClient.get('/orders');
 
@@ -17,7 +17,7 @@ class OrderService {
     }
   }
 
-  async get(id: any): Promise<any> {
+  async get(id: any): Promise<IOrder> {
     try {
       const response = await apiClient.get(`/orders/${id}`);
 
@@ -29,7 +29,7 @@ class OrderService {
     }
   }
 
-  async create(data: IOrder): Promise<IOrder | {}> {
+  async create(data: IOrder): Promise<IOrder> {
     try {
       const response = await apiClient.post('/orders', data);
 
@@ -41,7 +41,7 @@ class OrderService {
     }
   }
 
-  async update(id: number, data: string): Promise<IOrder | {}> {
+  async update(id: number, data: string): Promise<IOrder> {
     try {
       const response = await apiClient.put(`/orders/${id}`, data);
 
@@ -53,7 +53,7 @@ class OrderService {
     }
   }
 
-  async delete(id: number): Promise<IOrder | {}> {
+  async delete(id: number): Promise<IOrder> {
     try {
       const response = await apiClient.delete(`/orders/${id}`);
 
@@ -65,15 +65,15 @@ class OrderService {
     }
   }
 
-  async findByTitle(title: string): Promise<IOrder[] | []> {
+  async finishedOrder(id: number): Promise<void> {
     try {
-      const response = await apiClient.get(`/orders?title=${title}`);
-
-      return response.data || [];
+      await apiClient.put(`/orders/${id}/finished`);
+      
+      notification('success', `Выполнение заказа прошло успешно!`);
     } catch (error) {
-      notification('error', `При поиске заказов произошла ошибка: ${error}`);
+      notification('error', `При завершении заказа произошла ошибка: ${error}`);
 
-      throw new Error(`При поиске заказов произошла ошибка: ${error}`);
+      throw new Error(`При завершении заказа произошла ошибка: ${error}`);
     }
   }
 }

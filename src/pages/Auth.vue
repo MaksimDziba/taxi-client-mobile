@@ -38,10 +38,21 @@
               </a-input-password>
             </a-form-item>
 
+            <a-form-item
+              label="Роль"
+              name="role"
+              :rules="[{ required: true, message: 'Обязательное поле!' }]"
+            >
+              <a-select v-model:value="formState.role">
+                <a-select-option value="driver">Водитель</a-select-option>
+                <a-select-option value="client">Клиент</a-select-option>
+              </a-select>
+            </a-form-item>
+
             <a-button
               type="primary"
               size="middle"
-              :disabled="disabledAuth"
+              :disabled="disabledButton"
               @click="onAuth"
             >
               Вход
@@ -52,7 +63,7 @@
         <a-tab-pane key="2" tab="Регистрация">
           <a-form
             ref="formRefRegistration"
-            :model="formStateRegistration"
+            :model="formState"
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
           >
@@ -61,10 +72,7 @@
               name="phone"
               :rules="[{ required: true, message: 'Обязательное поле!' }]"
             >
-              <a-input
-                autoComplete="off"
-                v-model:value="formStateRegistration.phone"
-              >
+              <a-input autoComplete="off" v-model:value="formState.phone">
                 <template #prefix>
                   <UserOutlined class="site-form-item-icon" />
                 </template>
@@ -78,7 +86,7 @@
             >
               <a-input-password
                 autoComplete="off"
-                v-model:value="formStateRegistration.password"
+                v-model:value="formState.password"
               >
                 <template #prefix>
                   <LockOutlined class="site-form-item-icon" />
@@ -91,7 +99,7 @@
               name="role"
               :rules="[{ required: true, message: 'Обязательное поле!' }]"
             >
-              <a-select v-model:value="formStateRegistration.role">
+              <a-select v-model:value="formState.role">
                 <a-select-option value="driver">Водитель</a-select-option>
                 <a-select-option value="client">Клиент</a-select-option>
               </a-select>
@@ -101,7 +109,7 @@
           <a-button
             type="primary"
             size="middle"
-            :disabled="disabledRegistration"
+            :disabled="disabledButton"
             @click="onRegistration"
           >
             Регистрация
@@ -113,15 +121,15 @@
 </template>
 
 <script lang="ts">
-import { registrationUser, loginUser } from "../api/auth";
+import { registrationUser, loginUser } from '../api/auth';
 
-import { computed, defineComponent, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import { computed, defineComponent, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
-import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
-import type { FormInstance } from "ant-design-vue";
+import type { FormInstance } from 'ant-design-vue';
 
 interface FormState {
   phone: string;
@@ -130,7 +138,7 @@ interface FormState {
 }
 
 export default defineComponent({
-  name: "Auth",
+  name: 'Auth',
   components: {
     UserOutlined,
     LockOutlined,
@@ -142,15 +150,10 @@ export default defineComponent({
     const formRefAuth = ref<FormInstance>();
     const formRefRegistration = ref<FormInstance>();
 
-    const formStateAuth = reactive<FormState>({
-      phone: "",
-      password: "",
-    });
-
-    const formStateRegistration = reactive<FormState>({
-      phone: "",
-      password: "",
-      role: "driver",
+    const formState = reactive({
+      phone: '',
+      password: '',
+      role: 'client' as const,
     });
 
     const onAuth = async () => {
@@ -159,18 +162,20 @@ export default defineComponent({
           const isValidForm = await formRefAuth.value.validate();
 
           if (isValidForm) {
-            const { token, user } = await loginUser(formStateAuth);
+            const { token, user } = await loginUser(formState);
 
             if (token && user) {
-              store.dispatch("base/setToken", token);
-              store.dispatch("base/setUser", user);
+              await store.dispatch('base/setToken', token);
+              await store.dispatch('base/setUser', user);
 
-              updateRoute(user.roles[0].value);
+              await store.dispatch('base/setUserData');
+
+              updateRoute(user.role);
             }
           }
         }
       } catch (error) {
-        console.log("При авторизации произошла ошибка", error);
+        console.log('При авторизации произошла ошибка', error);
       }
     };
 
@@ -180,51 +185,44 @@ export default defineComponent({
           const isValidForm = await formRefRegistration.value.validate();
 
           if (isValidForm) {
-            store.dispatch("base/setLoading", true);
+            store.dispatch('base/setLoading', true);
 
-            const response = await registrationUser(formStateRegistration);
+            const response = await registrationUser(formState);
 
             if (response) {
-              store.dispatch("base/setToken", response.token);
-              store.dispatch("base/setUser", response.user);
+              store.dispatch('base/setToken', response.token);
+              store.dispatch('base/setUser', response.user);
 
-              router.push({ path: "/registration" });
+              router.push({ path: '/registration' });
             }
           }
         }
       } catch (error) {
-        console.log("При регистрации произошла ошибка", error);
+        console.log('При регистрации произошла ошибка', error);
       } finally {
-        store.dispatch("base/setLoading", false);
+        store.dispatch('base/setLoading', false);
       }
     };
 
     const updateRoute = (role: string) => {
-      if (role === "driver") {
-        router.push({ path: "/shifts" });
-      } else if (role === "client") {
-        router.push({ path: "/order-client" });
+      if (role === 'driver') {
+        router.push({ path: '/shifts' });
+      } else if (role === 'client') {
+        router.push({ path: '/order-client' });
       }
     };
 
-    const disabledAuth = computed(() => {
-      return !(formStateAuth.phone && formStateAuth.password);
-    });
-
-    const disabledRegistration = computed(() => {
-      const { phone, password, role } = formStateRegistration;
-
-      return !(phone && password && role);
+    const disabledButton = computed(() => {
+      return !(formState.phone && formState.password && formState.role);
     });
 
     return {
-      activeKey: ref("1"),
-      formStateAuth,
-      formStateRegistration,
+      activeKey: ref('1'),
+      formStateAuth: formState,
+      formState,
       formRefAuth,
       formRefRegistration,
-      disabledAuth,
-      disabledRegistration,
+      disabledButton,
       onAuth,
       onRegistration,
     };

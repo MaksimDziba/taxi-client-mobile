@@ -3,35 +3,9 @@ import apiClient from "./http/axios-client";
 import { notification } from "../service/notification";
 
 import { IClient } from "../interface/Client";
+import { OrdersGroupedByStatus } from "../interface/Order";
 
 class ClientService {
-  async getAll(params: object): Promise<IClient[] | []> {
-    try {
-      const response = await apiClient.get("/clients", {
-        params,
-      });
-
-      return response.data || [];
-    } catch (error) {
-      notification("error", `При получении клиентов произошла ошибка: ${error}`);
-
-      throw new Error(`При получении клиентов произошла ошибка: ${error}`);
-    }
-  }
-
-  async get(id: number): Promise<IClient | {}> {
-    try {
-      const response = await apiClient.get(`/clients/${id}`);
-
-    return response.data || {};
-    } catch (error) {
-      notification("error", `При получении клиента произошла ошибка: ${error}`);
-
-      throw new Error(`При получении клиента произошла ошибка: ${error}`);
-    }
-    
-  }
-
   async getClientByPhone(phone: string): Promise<IClient | {}> {
     try {
       const response = await apiClient.get(`/clients/phone`, {
@@ -43,18 +17,6 @@ class ClientService {
       notification("error", `При получении клиента произошла ошибка: ${error}`);
 
       throw new Error(`При получении клиента произошла ошибка: ${error}`);
-    }
-  }
-
-  async create(data: IClient): Promise<IClient> {
-    try {
-      const response = await apiClient.post("/clients", data);
-
-      return response.data;
-    } catch (error) {
-      notification("error", `При создании клиента произошла ошибка: ${error}`);
-
-      throw new Error(`При создании клиента произошла ошибка: ${error}`);
     }
   }
 
@@ -83,8 +45,16 @@ class ClientService {
     }
   }
 
-  findByTitle(title: string): Promise<IClient[]> {
-    return apiClient.get(`/clients?title=${title}`);
+  async getOrders(id: number): Promise<OrdersGroupedByStatus> {
+    try {
+      const response = await apiClient.get(`/clients/${id}/orders/`);
+
+      return response.data || [];
+    } catch (error) {
+      notification("error", `При получении заказов клиента произошла ошибка: ${error}`);
+
+      throw new Error(`При получении заказов клиента произошла ошибка: ${error}`);
+    }
   }
 }
 

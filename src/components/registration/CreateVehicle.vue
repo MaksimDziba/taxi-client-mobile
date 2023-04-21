@@ -7,7 +7,6 @@
       layout="vertical"
       :model="formData"
       validateOnRuleChange
-      @validate="handleValidate"
     >
       <a-form-item
         label="Модель"

@@ -105,8 +105,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     {
-      const store = useStore();
-
       const formRef = ref<FormInstance>();
       const validForm = ref<boolean>(true);
 

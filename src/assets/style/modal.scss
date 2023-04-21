@@ -1,0 +1,16 @@
+.order-in-progress {
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+
+  &__detail {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 20px;
+  }
+
+  &__test-button {
+    margin-top: auto;
+  }
+}

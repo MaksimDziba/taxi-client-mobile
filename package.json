@@ -11,12 +11,14 @@
     "ant-design-vue": "^3.2.3",
     "axios": "^0.27.2",
     "idb": "^7.0.1",
+    "lodash": "^4.17.21",
     "vue": "^3.2.25",
     "vue-router": "^4.0.15",
     "vue-yandex-maps": "^0.12.3",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.7",
     "@vitejs/plugin-vue": "^2.3.3",
     "prettier": "^2.8.1",
     "sass": "^1.52.0",

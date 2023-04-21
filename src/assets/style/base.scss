@@ -86,6 +86,12 @@ $background-main: #F6F7FB;
 
 .layout-content {
   overflow-y: scroll;
+
+  > div {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
 }
 
 .layout-footer {

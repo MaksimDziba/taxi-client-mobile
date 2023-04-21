@@ -31,7 +31,7 @@
         </a-descriptions-item>
 
         <a-descriptions-item label="Маршрут">
-          {{ routeOrder.durationInTraffic }}(без пробок {{ routeOrder.duration }}), {{ routeOrder.distance }}
+          {{ routeOrder.duration }}(без пробок {{ routeOrder.durationInTraffic }}), {{ routeOrder.distance }}
         </a-descriptions-item>
       </a-descriptions>
 
@@ -49,21 +49,22 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive, ref } from 'vue';
 import { loadYmap } from 'vue-yandex-maps';
-
 import { useStore } from 'vuex';
 
-import ShiftService from "../../../api/shifts";
+import ShiftService from '../../../api/shifts';
 
 import { yaSettings } from '../../../settings';
 
+import { IOrder } from '../../../interface/Order';
+
 export default defineComponent({
-  name: "OrderDetailModal",
+  name: 'OrderDetailModal',
   props: {
     data: Object,
   },
   setup({ data = {} }) {
     const store = useStore();
-    const shiftID = ref<number>(store.state["base"].driver.shifts[0].id);
+    const shiftID = ref<number>(store.state['base'].driver.shifts[0].id);
 
     const routeOrder = reactive({
       distance: '',
@@ -71,7 +72,7 @@ export default defineComponent({
       durationInTraffic: '',
     });
 
-    const { id: orderID, addressFrom, addressTo, location } = data;
+    const { id: orderID, addressFrom, addressTo, location } = data as IOrder;
 
     const { from } = JSON.parse(location);
 
@@ -83,22 +84,22 @@ export default defineComponent({
       await loadYmap({ ...yaSettings });
 
       ymaps.ready(function () {
-        const multiRoute = new ymaps.multiRouter.MultiRoute({
-          // Описание опорных точек мультимаршрута.
-          referencePoints: [
-            addressFrom,
-            addressTo
-          ],
-          // Параметры маршрутизации.
-          params: {
-            // Ограничение на максимальное количество маршрутов, возвращаемое маршрутизатором.
-            results: 2,
-          }
-        }, {
-          // Автоматически устанавливать границы карты так, чтобы маршрут был виден целиком.
-          boundsAutoApply: true,
-          activeRouteAutoSelection: true,
-        });
+        const multiRoute = new ymaps.multiRouter.MultiRoute(
+          {
+            // Описание опорных точек мультимаршрута.
+            referencePoints: [addressFrom, addressTo],
+            // Параметры маршрутизации.
+            params: {
+              // Ограничение на максимальное количество маршрутов, возвращаемое маршрутизатором.
+              results: 2,
+            },
+          },
+          {
+            // Автоматически устанавливать границы карты так, чтобы маршрут был виден целиком.
+            boundsAutoApply: true,
+            activeRouteAutoSelection: true,
+          },
+        );
 
         const zoomControl = new ymaps.control.ZoomControl({
           options: {
@@ -106,16 +107,16 @@ export default defineComponent({
             float: 'none',
             position: {
               bottom: 145,
-              left: 10
-            }
-          }
+              left: 10,
+            },
+          },
         });
 
-        // Создаем карту с добавленными на нее кнопками.
+        // Создание карты с кнопками управления
         const myMap = new ymaps.Map('map', {
           center: [from.lat, from.lon],
           zoom: 7,
-          controls: []
+          controls: [],
         });
 
         // Получить данные маршрута.
@@ -126,13 +127,16 @@ export default defineComponent({
             if (route) {
               routeOrder.distance = route.properties.get('distance').text;
               routeOrder.duration = route.properties.get('duration').text;
-              routeOrder.durationInTraffic = route.properties.get('durationInTraffic').text;
+              routeOrder.durationInTraffic =
+                route.properties.get('durationInTraffic').text;
             }
           })
           .add('requestfail', function (event: any) {
-            alert("Ошибка загрузки маршрута");
+            alert('Ошибка загрузки маршрута');
 
-            console.log("Ошибка загрузки маршрута: " + event.get("error").message);
+            console.log(
+              'Ошибка загрузки маршрута: ' + event.get('error').message,
+            );
           });
 
         // Добавляем zoom на карту.
@@ -140,19 +144,17 @@ export default defineComponent({
         // Добавляем мультимаршрут на карту.
         myMap.geoObjects.add(multiRoute);
       });
-    }
-
-    const handleClose = () => {
-      store.dispatch('modal/setClose');
     };
 
     const handleTakeOrder = async () => {
-      try {
-        await ShiftService.assignOrderToShift(orderID, shiftID.value);
-      } finally {
-        handleClose();
-      }
-    }
+      await ShiftService.assignOrderToShift(orderID, shiftID.value);
+
+      store.commit('modal/SET_MODAL', {
+        type: 'order-in-progress',
+        show: true,
+        data,
+      });
+    };
 
     return {
       data,

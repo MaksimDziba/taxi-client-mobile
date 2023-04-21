@@ -24,13 +24,11 @@
 import { defineComponent, ref, onMounted, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { yaSettings } from '../settings';
+import { yaSettings } from '../../../settings';
 
-import OrderService from '../api/orders';
+import OrderService from '../../../api/orders';
 
-import OrderDetailModal from '../components/modals/orders/OrderDetail.vue';
-
-import { IOrder } from '../interface/Order';
+import { IOrder } from '../../../interface/Order';
 
 interface IMapProperty {
   [key: string]: {
@@ -41,9 +39,6 @@ interface IMapProperty {
 
 export default defineComponent({
   name: 'MapDriver',
-  components: {
-    OrderDetailModal,
-  },
   setup() {
     const store = useStore();
 

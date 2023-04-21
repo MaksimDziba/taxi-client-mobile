@@ -2,16 +2,18 @@
   <div class="top-bar">
     <div class="top-bar__left">
       <div class="top-bar__avatar">
-        <a-avatar shape="square" :size="40">
+        <a-avatar shape="square" :size="40" @click="handleOpenProfile">
           <template #icon><UserOutlined /></template>
         </a-avatar>
 
         <div class="top-bar__user-info">
           <div class="top-bar__user-info_name">{{ name }}</div>
+
           <div class="top-bar__user-info_rating">
-            <span class="top-bar__user-info_star"
-              ><StarFilled style="color: #f7ce09"
-            /></span>
+            <span class="top-bar__user-info_star">
+              <StarFilled style="color: #f7ce09" />
+            </span>
+
             <span class="top-bar__user-info_score">4.0</span>
           </div>
         </div>
@@ -25,22 +27,34 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
-import { useStore } from "vuex";
+import { computed, defineComponent } from 'vue';
+import { useStore } from 'vuex';
 
-import { UserOutlined, StarFilled } from "@ant-design/icons-vue";
+import { UserOutlined, StarFilled } from '@ant-design/icons-vue';
 
 export default defineComponent({
-  name: "TopBar",
+  name: 'TopBar',
   components: {
     UserOutlined,
     StarFilled,
   },
   setup() {
-    const store = useStore().state["base"];
-    const name = computed(() => store.user?.name || "");
+    const store = useStore();
 
-    return { name };
+    const storeBase = store.state['base'];
+    const name = computed(() => storeBase.user?.name || '');
+
+    const handleOpenProfile = () => {
+      store.commit('modal/SET_MODAL', {
+        type: 'profile',
+        show: true,
+      });
+    };
+
+    return {
+      name,
+      handleOpenProfile,
+    };
   },
 });
 </script>

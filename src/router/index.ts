@@ -4,9 +4,8 @@ import StorageService from "../service/storage.service.js";
 
 import Auth from "../pages/Auth.vue";
 import Shifts from "../pages/Shifts.vue";
-import MapDriver from "../pages/MapDriver.vue";
-import MapClient from "../pages/MapClient.vue";
-import OrderClient from "../pages/OrderClient.vue";
+import Map from "../pages/Map.vue";
+import OrdersClient from "../pages/OrdersClient.vue";
 import Registration from "../pages/Registration.vue";
 import OrdersDriver from "../pages/OrdersDriver.vue";
 
@@ -52,21 +51,12 @@ const routes = [
     beforeEnter: isNotAuth,
   },
   {
-    path: "/map-driver",
-    name: "MapDriver",
+    path: "/map",
+    name: "Map",
     meta: {
       auth: true,
     },
-    component: MapDriver,
-    beforeEnter: isAuth,
-  },
-  {
-    path: "/map-client",
-    name: "MapClient",
-    meta: {
-      auth: true,
-    },
-    component: MapClient,
+    component: Map,
     beforeEnter: isAuth,
   },
   {
@@ -75,7 +65,7 @@ const routes = [
     meta: {
       auth: true,
     },
-    component: OrderClient,
+    component: OrdersClient,
     beforeEnter: isAuth,
   },
   {
@@ -99,7 +89,7 @@ const routes = [
   {
     path: '/:pathMatch(.*)*', 
     redirect: {
-      name: 'Shifts',
+      name: 'Map',
     },
   },
 ];

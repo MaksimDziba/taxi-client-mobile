@@ -5,20 +5,6 @@ import { notification } from "../service/notification";
 import { IDriver, IDriverCreate } from "../interface/Driver";
 
 class DriverService {
-  async getAll(params: object): Promise<IDriver[] | []>  {
-    try {
-      const response = await apiClient.get("/drivers", {
-        params,
-      });
-
-      return response.data || [];
-    } catch (error) {
-      notification("error", `При получении водителей произошла ошибка: ${error}`);
-
-      throw new Error(`При получении водителей произошла ошибка: ${error}`);
-    }
-  }
-
   async get(id: number): Promise<IDriver | {}> {
     try {
       const response = await apiClient.get(`/drivers/${id}`);

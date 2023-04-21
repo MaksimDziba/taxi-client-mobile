@@ -2,22 +2,19 @@ export interface IOrder {
   addressFrom: string,
   addressTo: string,
   babyChair: boolean,
-  location: string,
-  client: {
+  location?: string,
+  clientID: number,
+  client?: {
     id: number, 
     name: string,
     phone: string, 
-    createdAt: string | Date,
-    updatedAt: string | Date,
   },
-  clientID: number,
-  createdAt: string,
-  id: number,
+  id?: number,
   maxCountPassenger: number,
-  operatorName: string,
-  preOrderCost: number,
+  operatorName?: string,
+  preOrderCost?: number,
   status: "pending" | "accepted" | "process" | "finished",
-  tariff: {
+  tariff?: {
     id: number,
     type: string, 
     costPerKilometer: number,
@@ -27,5 +24,10 @@ export interface IOrder {
   tariffID: number,
   timeOrder: null | string,
   transportationAnimals: boolean,
-  updatedAt: string,
+  createdAt?: string,
+  updatedAt?: string,
+}
+
+export type OrdersGroupedByStatus = {
+  [status: string]: IOrder[];
 }

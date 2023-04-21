@@ -3,17 +3,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, ref } from "vue";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { computed, defineComponent, onBeforeMount, ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from 'vue-router';
 
-import apiClient from "./api/http/axios-client";
+import apiClient from './api/http/axios-client';
 
-import MainLayout from "./layout/MainLayout.vue";
-import AuthLayout from "./layout/AuthLayout.vue";
+import MainLayout from './layout/MainLayout.vue';
+import AuthLayout from './layout/AuthLayout.vue';
 
 export default defineComponent({
-  name: "App",
+  name: 'App',
   components: {
     MainLayout,
     AuthLayout,
@@ -24,19 +24,19 @@ export default defineComponent({
     const isDataLoaded = ref(false);
 
     onBeforeMount(async () => {
-      const token = await store.dispatch("base/checkAuth");
+      const token = await store.dispatch('base/checkAuth');
 
       if (token) {
         apiClient.defaults.headers.common.Authorization = token;
       }
 
+      await store.dispatch('base/setUserData');
+
       isDataLoaded.value = true;
     });
 
     return {
-      layout: computed(() =>
-        !!route?.meta?.auth ? MainLayout : AuthLayout
-      ),
+      layout: computed(() => (!!route?.meta?.auth ? MainLayout : AuthLayout)),
       isDataLoaded,
     };
   },

@@ -2,12 +2,8 @@ import apiClient from "./http/axios-client";
 
 import { notification } from "../service/notification";
 
-interface ISuggestion {
-  address: string;
-}
-
 class GeoService {
-  async fetchAddresses(place: string): Promise<ISuggestion | []> {
+  async fetchAddresses(query: string) {
     const key = import.meta.env.VITE_DADATA_TOKEN;
     const url =
       "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address";
@@ -15,7 +11,11 @@ class GeoService {
     try {
       const response = await apiClient.post(
         url,
-        JSON.stringify({ query: place }),
+        JSON.stringify({ 
+          count: 5,
+          locations: { kladr_id: "37" },
+          query, 
+        }),
         {
           headers: {
             "Content-Type": "application/json",
@@ -31,8 +31,6 @@ class GeoService {
 
       return response.data?.suggestions || [];
     } catch (error) {
-      notification("error", `При удалении клиента произошла ошибка: ${error}`);
-
       throw new Error(`Fetch address. ${error}`);
     }
   }

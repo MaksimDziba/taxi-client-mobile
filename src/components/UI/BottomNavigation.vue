@@ -91,10 +91,6 @@ export default defineComponent({
       router.push({ path });
     };
 
-    onBeforeMount(() => {
-      store.dispatch("base/setUserData");
-    });
-
     return {
       path,
       menuList,
