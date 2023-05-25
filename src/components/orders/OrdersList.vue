@@ -20,11 +20,13 @@
       </a-card-meta>
     </a-card>
   </div>
+
+  <div v-else class="p-shifts__top">"{{ title }}" заказы не найдены.</div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import type { PropType } from 'vue'; 
+import { defineComponent, toRef } from 'vue';
+import type { PropType } from 'vue';
 
 interface Order {
   id?: number;
@@ -44,15 +46,13 @@ export default defineComponent({
     },
     orders: {
       type: Array as PropType<Order[]>,
-      default: () => ([]),
+      default: () => [],
     },
   },
   setup(props) {
-    const { title, orders } = props;
-
     return {
-      title,
-      orders, 
+      title: toRef(props, 'title'),
+      orders: toRef(props, 'orders'),
     };
   },
 });

@@ -2,7 +2,6 @@ import apiClient from './http/axios-client';
 
 import { notification } from '../service/notification';
 
-import { IUser } from '../interface/User';
 import { AxiosError } from 'axios';
 
 type UserData = {

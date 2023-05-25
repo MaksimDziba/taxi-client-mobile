@@ -102,29 +102,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref, toRaw } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, onMounted, reactive, ref, toRaw } from 'vue';
+import { FormInstance } from 'ant-design-vue';
+import { useRouter } from 'vue-router';
 
-import StorageService from "../../service/storage.service.js";
-import { notification } from "../../service/notification";
+import VehicleService from '../../api/vehicles';
 
-import VehicleService from "../../api/vehicles";
+import StorageService from '../../service/storage.service.js';
+import { notification } from '../../service/notification';
 
-import { IVehicle } from "../../interface/Vehicle";
-import { FormInstance } from "ant-design-vue";
+import { IVehicle } from '../../interface/Vehicle';
 
 const capacity = [
-  { label: "Малой грузоподъемности (0,5-2 тонны)", value: "0,5-2 тонны" },
+  { label: 'Малой грузоподъемности (0,5-2 тонны)', value: '0,5-2 тонны' },
   {
-    label: "Средней грузоподъемности (от 2 до 5 тонн)",
-    value: "от 2 до 5 тонн",
+    label: 'Средней грузоподъемности (от 2 до 5 тонн)',
+    value: 'от 2 до 5 тонн',
   },
-  { label: "Большой грузоподъемности (5-16 тонн)", value: "5-16 тонн" },
-  { label: "Особой большой (от 16 тонн)", value: "от 16 тонн" },
+  { label: 'Большой грузоподъемности (5-16 тонн)', value: '5-16 тонн' },
+  { label: 'Особой большой (от 16 тонн)', value: 'от 16 тонн' },
 ];
 
 export default defineComponent({
-  name: "CreateDriver",
+  name: 'CreateDriver',
   props: {
     title: String,
   },
@@ -138,21 +138,21 @@ export default defineComponent({
       const capacityOptions = capacity;
 
       const rules = {
-        gosNumber: [{ required: true, message: "Обязательное поле!" }],
-        dateManufacture: [{ required: true, message: "Обязательное поле!" }],
-        carModel: [{ required: true, message: "Обязательное поле!" }],
-        carColor: [{ required: true, message: "Обязательное поле!" }],
-        capacity: [{ required: true, message: "Обязательное поле!" }],
-        babyChair: [{ required: true, message: "Обязательное поле!" }],
-        maxCountPassenger: [{ required: true, message: "Обязательное поле!" }],
-        drivers: [{ required: true, message: "Обязательное поле!" }],
+        gosNumber: [{ required: true, message: 'Обязательное поле!' }],
+        dateManufacture: [{ required: true, message: 'Обязательное поле!' }],
+        carModel: [{ required: true, message: 'Обязательное поле!' }],
+        carColor: [{ required: true, message: 'Обязательное поле!' }],
+        capacity: [{ required: true, message: 'Обязательное поле!' }],
+        babyChair: [{ required: true, message: 'Обязательное поле!' }],
+        maxCountPassenger: [{ required: true, message: 'Обязательное поле!' }],
+        drivers: [{ required: true, message: 'Обязательное поле!' }],
       };
 
       const formData = reactive<IVehicle>({
-        gosNumber: "",
-        dateManufacture: "",
-        carModel: "",
-        carColor: "",
+        gosNumber: '',
+        dateManufacture: '',
+        carModel: '',
+        carColor: '',
         capacity: null,
         babyChair: false,
         maxCountPassenger: null,
@@ -180,14 +180,14 @@ export default defineComponent({
               if (vehicle) {
                 formRef.value.resetFields();
 
-                router.push({ path: "/shifts" });
+                router.push({ path: '/shifts' });
               }
             }
           }
         } catch (error) {
-          console.log("При создании ТС произошла ошибка", error);
+          console.log('При создании ТС произошла ошибка', error);
 
-          notification("error", "При создании водителя произошла ошибка");
+          notification('error', 'При создании водителя произошла ошибка');
         }
       };
 

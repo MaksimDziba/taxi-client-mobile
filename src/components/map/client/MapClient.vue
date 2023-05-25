@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div id="map" style="width: 390px; height: 716px"></div>
+    <div id="map" :style="style"></div>
 
-    <order-pending v-if="showPending" @accept="showPending = false"/>
+    <order-pending v-if="showPending" @accept="showPending = false" />
 
-    <order-client @update-map="handleUpdateMap" />
+    <order-client v-if="isMapReady" @update-map="handleUpdateMap" />
   </div>
 </template>
 
@@ -27,11 +27,26 @@ export default defineComponent({
     OrderPending,
   },
   setup() {
+    const isMapReady = ref<boolean>(false);
     const showPending = ref<boolean>(false);
+    const style = ref({
+      width: '0px',
+      height: '0px',
+    });
 
     onMounted(() => {
+      getStyle();
       loadingYMap('', '');
     });
+
+    const getStyle = () => {
+      const { width, height } = window.screen;
+
+      style.value = {
+        width: `${width}px`,
+        height: `${height}px`,
+      };
+    };
 
     let map: IYandexMapType | null = null;
 
@@ -71,10 +86,15 @@ export default defineComponent({
 
         map!.controls.add(zoomControl);
         map!.geoObjects.add(multiRoute);
+
+        isMapReady.value = true;
       });
     };
 
-    const handleUpdateMap = async (data: {
+    const handleUpdateMap = async ({
+      addressFrom,
+      addressTo,
+    }: {
       addressFrom: string;
       addressTo: string;
     }) => {
@@ -85,11 +105,13 @@ export default defineComponent({
         map.destroy();
 
         // Создаем новую карту с обновленными данными маршрута
-        await loadingYMap(data.addressFrom, data.addressTo);
+        await loadingYMap(addressFrom, addressTo);
       }
     };
 
     return {
+      style,
+      isMapReady,
       yaSettings,
       coords: [57.000348, 40.973921],
       showPending,

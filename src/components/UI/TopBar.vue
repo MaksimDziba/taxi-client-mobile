@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="top-bar__right">
+    <div v-if="isDriver" class="top-bar__right">
       <div class="top-bar__balance">1 840 ₽</div>
     </div>
   </div>
@@ -44,6 +44,8 @@ export default defineComponent({
     const storeBase = store.state['base'];
     const name = computed(() => storeBase.user?.name || '');
 
+    const isDriver = computed(() => !storeBase.client && storeBase.driver);
+
     const handleOpenProfile = () => {
       store.commit('modal/SET_MODAL', {
         type: 'profile',
@@ -53,6 +55,7 @@ export default defineComponent({
 
     return {
       name,
+      isDriver,
       handleOpenProfile,
     };
   },

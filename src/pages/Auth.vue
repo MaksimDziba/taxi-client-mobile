@@ -131,12 +131,6 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 
 import type { FormInstance } from 'ant-design-vue';
 
-interface FormState {
-  phone: string;
-  password: string;
-  role?: string;
-}
-
 export default defineComponent({
   name: 'Auth',
   components: {
@@ -193,7 +187,7 @@ export default defineComponent({
               store.dispatch('base/setToken', response.token);
               store.dispatch('base/setUser', response.user);
 
-              router.push({ path: '/registration' });
+              updateRoute(response.user.role);
             }
           }
         }

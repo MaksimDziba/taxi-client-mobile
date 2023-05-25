@@ -2,12 +2,12 @@
   <div
     class="order-client"
     :class="{
-      'order-client__open': isToggleOrder,
+      'order-client__open': isShowOrderDialog,
     }"
   >
     <a-button
       class="order-client__btn-open"
-      @click="isToggleOrder = !isToggleOrder"
+      @click="isShowOrderDialog = !isShowOrderDialog"
     >
       <caret-up-outlined />
     </a-button>
@@ -96,9 +96,19 @@
         />
       </a-form-item>
 
-      <a-button :disabled="disableButton" type="primary" @click="createOrder">
-        Создать заказ
-      </a-button>
+      <div class="order-client__footer">
+        <a-button :disabled="disableButton" type="primary" @click="createOrder">
+          Создать заказ
+        </a-button>
+
+        <a-button
+          v-if="isExistsOrderPending"
+          type="primary"
+          @click="finishedOrder"
+        >
+          Завершить заказ
+        </a-button>
+      </div>
     </a-form>
   </div>
 </template>
@@ -139,7 +149,13 @@ export default defineComponent({
     const store = useStore();
     const client = computed(() => store.state['base'].client);
 
-    const isToggleOrder = ref<boolean>(false);
+    const orderPending = client.value.orders.find(
+      (order: IOrder) => order.status === 'pending',
+    );
+
+    const isExistsOrderPending = !!orderPending?.id;
+
+    const isShowOrderDialog = ref<boolean>(false);
     const validForm = ref<boolean>(true);
     const tariffs = ref<ITariff[] | []>([]);
     const kilometersCount = ref<number>(4);
@@ -152,21 +168,31 @@ export default defineComponent({
       transportationAnimals: false,
       babyChair: false,
       timeOrder: null,
-      tariffID: 1,
+      tariffID: 0,
       clientID: client.value?.id,
       client: {
         id: client.value?.id,
         name: client.value?.name || client.value.phone || '',
         phone: client.value.phone || '',
       },
+      ...orderPending,
     });
 
     const disableButton = computed(() => {
-      return !(formData.addressFrom && formData.addressTo);
+      return (
+        !(formData.addressFrom && formData.addressTo) || !!isExistsOrderPending
+      );
     });
 
     onMounted(() => {
       getTariffs();
+
+      if (isExistsOrderPending) {
+        emit('update-map', {
+          addressFrom: orderPending.addressFrom,
+          addressTo: orderPending.addressTo,
+        });
+      }
     });
 
     const getTariffs = async () => {
@@ -275,17 +301,22 @@ export default defineComponent({
           preOrderCost,
         });
 
-        emit("update-map", {
+        emit('update-map', {
           addressFrom: order.addressFrom,
           addressTo: order.addressTo,
         });
       } finally {
-        isToggleOrder.value = false;
+        isShowOrderDialog.value = false;
       }
     };
 
+    const finishedOrder = async () => {
+      console.log('here');
+    };
+
     return {
-      isToggleOrder,
+      isShowOrderDialog,
+      isExistsOrderPending,
       kilometersCount,
       tariffsCalc,
       formData,
@@ -295,6 +326,7 @@ export default defineComponent({
       handleValidate,
       disableButton,
       createOrder,
+      finishedOrder,
     };
   },
 });

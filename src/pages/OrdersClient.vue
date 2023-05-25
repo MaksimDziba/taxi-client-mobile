@@ -31,7 +31,7 @@ interface Order {
 export default defineComponent({
   name: 'OrdersClient',
   components: {
-    OrdersList
+    OrdersList,
   },
   setup() {
     const store = useStore();
@@ -50,8 +50,8 @@ export default defineComponent({
     const fetchData = async () => {
       const groupOrders = await ClientService.getOrders(clientID.value);
 
-      ordersPending.value = createOrder(groupOrders.pending) || [];
-      ordersFinished.value = createOrder(groupOrders.finished) || [];
+      ordersPending.value = createOrder(groupOrders.pending || []);
+      ordersFinished.value = createOrder(groupOrders.finished || []);
     };
 
     const createOrder = (orders: IOrder[]) => {

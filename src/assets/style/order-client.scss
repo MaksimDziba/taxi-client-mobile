@@ -25,17 +25,23 @@
 
   &__open {
     top: 6%;
+    bottom: 0;
 
     .order-client__btn-open {
       .anticon {
         transform: rotate(180deg);
-      } 
+      }
     }
   }
 
   &__form {
     height: 650px;
     overflow: scroll;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
   }
 }
 
@@ -56,24 +62,20 @@
     }
 
     // tariffs-buttons__item_name
-    &_name {
-
-    }
+    &_name {}
 
     // tariffs-buttons__item_cost
     &_cost {
       font-size: 16px;
     }
 
-    & + .active {
-      border: 1px solid #c0bfbd;
-      background-color: #f5f4f2;
+    // tariffs-buttons__item active
+    &.active {
+      border: 1px solid #c0bfbd !important;
+      background-color: #f5f4f2 !important;
 
-
-      .tariffs-buttons__item_name,
-      .tariffs-buttons__item_cost {
-        font-weight: bold;
-
+      div {
+        font-weight: bold !important;
       }
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <component :is="type"/>
+  <component :is="type" />
 </template>
 
 <script lang="ts">
@@ -18,7 +18,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const role = computed(() => store.state['base'].user.role || '');
-    const type = ref<'MapClient' | 'MapDriver' | null>(null);
+    const type = ref<'MapClient' | 'MapDriver' | ''>('');
 
     if (role.value === 'client') {
       type.value = 'MapClient';

@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue';
+import { defineComponent, ref, onMounted, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 
 import { yaSettings } from '../../../settings';
@@ -41,6 +41,12 @@ export default defineComponent({
   name: 'MapDriver',
   setup() {
     const store = useStore();
+    
+    const isUpdateData = computed(() => store.state['base'].updateData);
+
+    watch(isUpdateData, () => {
+      fetchData();
+    });
 
     const orders = ref<IOrder[]>([]);
     const isLoading = ref<Boolean>(false);
@@ -51,7 +57,7 @@ export default defineComponent({
       isLoading.value = false;
 
       try {
-        orders.value = await OrderService.getAll();
+        orders.value = await OrderService.getPending();
       } finally {
         isLoading.value = true;
       }

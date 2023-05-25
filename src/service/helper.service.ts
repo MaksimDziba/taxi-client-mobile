@@ -1,4 +1,4 @@
-export const dateToHoursMinutes = (date) => {
+export const dateToHoursMinutes = (date: Date): string => {
   if (!date || !(date instanceof Date)) {
     return "00:00";
   }
@@ -11,7 +11,7 @@ export const dateToHoursMinutes = (date) => {
   }).format(date);
 };
 
-export const dateToMoscow = (date) => {
+export const dateToMoscow = (date: Date): string => {
   if (!date || !(date instanceof Date)) {
     return "00:00";
   }

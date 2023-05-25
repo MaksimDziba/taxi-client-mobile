@@ -245,6 +245,7 @@ export default defineComponent({
         await OrderService.finishedOrder(orderID);
       } finally {
         store.dispatch('modal/setClose');
+        store.dispatch("base/setUpdateData");
       }
     };
 
